@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cloudflare": "npx @cloudflare/next-on-pages@1",
+    "build:cloudflare": "npx @cloudflare/next-on-pages",
+    "pages:build": "npx @cloudflare/next-on-pages",
     "start": "next start",
     "lint": "next lint",
     "test-connection": "tsx scripts/test-connection.ts",
