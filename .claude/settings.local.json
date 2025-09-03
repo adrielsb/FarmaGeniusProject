@@ -17,7 +17,12 @@
       "Bash(npx eslint:*)",
       "Bash(node:*)",
       "Bash(timeout:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git reset:*)",
+      "Bash(npm run start:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []
