@@ -17,7 +17,17 @@
       "Bash(npx eslint:*)",
       "Bash(node:*)",
       "Bash(timeout:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(rd:*)",
+      "Bash(npm run start:*)",
+      "Bash(npx create-next-app:*)",
+      "Bash(npm audit:*)",
+      "Bash(npm update:*)",
+      "Bash(npm view:*)",
+      "Bash(npm outdated)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

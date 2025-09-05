@@ -24,7 +24,7 @@ export async function PUT(request: NextRequest) {
     })
 
     if (!validationResult.success) {
-      const errors = validationResult.error.errors.map(err => err.message).join(", ")
+      const errors = validationResult.error.issues.map(err => err.message).join(", ")
       return createErrorResponse(errors, 400)
     }
 

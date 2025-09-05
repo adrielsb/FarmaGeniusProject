@@ -25,7 +25,7 @@ export const passwordSchema = z.object({
 export const mappingSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório").max(50, "Nome muito longo").trim(),
   description: z.string().max(200, "Descrição muito longa").optional(),
-  mappingData: z.record(z.string()).refine(
+  mappingData: z.record(z.string(), z.unknown()).refine(
     (data) => Object.keys(data).length > 0,
     "Mapeamento deve ter pelo menos uma entrada"
   )
