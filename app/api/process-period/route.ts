@@ -24,6 +24,7 @@ const GROUPS: GroupType[] = [
     title: 'SOLIDOS',
     items: ['CAPSULAS PRONTAS', 'CAPSULAS', 'CAPSULAS GASTRO', 'SACHES', 'MATERIA PRIMA'],
     hourlyLabel: 'TOTAL POR HORARIO SOLIDOS',
+    extras: ['SEM SEDEX (15:00)'],
     solids: true
   },
   {
