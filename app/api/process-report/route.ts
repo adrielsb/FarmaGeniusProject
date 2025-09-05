@@ -17,14 +17,13 @@ const GROUPS = [
     title: 'SOLIDOS',
     items: ['CAPSULAS PRONTAS', 'CAPSULAS', 'CAPSULAS GASTRO', 'SACHES', 'MATERIA PRIMA'],
     hourlyLabel: 'TOTAL POR HORARIO SOLIDOS',
-    extras: ['TOTAL SEM SEDEX (15:00)'],
     solids: true
   },
   {
     title: 'DERMATO A',
     items: [
       'GEL TRANSDERMICO, GEL VAGINAL',
-      'CREME, HYDRA FRESH, SECOND SKIN, CREME CRODA, CREME NÃO IONICO, CREME OIL FREE, CREME AREA DOS OLHOS, CREME CELULITE, LOÇÃO, LOÇÃO CREMOSA, LOÇÃO CRODA, LOÇÃO NÃO IONICA, LOÇÃO OIL FREE, POMADA',
+      'Creme e Loções',
       'BASE SERUM',
       'SHOT',
       'SOLUÇÃO, XAROPE, ESMALTE',
@@ -65,7 +64,20 @@ const DEFAULT_MAP: {[key: string]: string} = {
   "VEICULO": "HOMEOPATIA, FLORAL E VEICULO",
   "GEL TRANSDERMICO": "GEL TRANSDERMICO, GEL VAGINAL",
   "GEL VAGINAL": "GEL TRANSDERMICO, GEL VAGINAL",
-  "CREME": "CREME, HYDRA FRESH, SECOND SKIN, CREME CRODA, CREME NÃO IONICO, CREME OIL FREE, CREME AREA DOS OLHOS, CREME CELULITE, LOÇÃO, LOÇÃO CREMOSA, LOÇÃO CRODA, LOÇÃO NÃO IONICA, LOÇÃO OIL FREE, POMADA",
+  "CREME": "Creme e Loções",
+  "HYDRA FRESH": "Creme e Loções",
+  "SECOND SKIN": "Creme e Loções",
+  "CREME CRODA": "Creme e Loções",
+  "CREME NAO IONICO": "Creme e Loções",
+  "CREME OIL FREE": "Creme e Loções",
+  "CREME AREA DOS OLHOS": "Creme e Loções",
+  "CREME CELULITE": "Creme e Loções",
+  "LOCAO": "Creme e Loções",
+  "LOCAO CREMOSA": "Creme e Loções",
+  "LOCAO CRODA": "Creme e Loções",
+  "LOCAO NAO IONICA": "Creme e Loções",
+  "LOCAO OIL FREE": "Creme e Loções",
+  "POMADA": "Creme e Loções",
   "BASE SERUM": "BASE SERUM",
   "SHOT": "SHOT",
   "SOLUCAO": "SOLUÇÃO, XAROPE, ESMALTE",
@@ -110,12 +122,12 @@ const parseHour = (h: any): number | null => {
 
 const bucket = (h: any): string => {
   const n = parseHour(h)
-  if (n === 8) return BUCKETS[0]
-  if (n !== null && n >= 10 && n <= 13) return BUCKETS[1]
-  if (n === 14) return BUCKETS[2]
-  if (n === 15) return BUCKETS[3]
-  if (n === 0 || (n !== null && n >= 16 && n <= 23)) return BUCKETS[4]
-  return BUCKETS[5]
+  if (n !== null && n >= 7 && n <= 8) return BUCKETS[0] // "7:00 AS 8:00"
+  if (n !== null && n >= 10 && n <= 13) return BUCKETS[1] // "10:00 AS 13:00"
+  if (n === 14) return BUCKETS[2] // "14:00"
+  if (n === 15) return BUCKETS[3] // "15:00"
+  if (n !== null && n >= 16 && n <= 17) return BUCKETS[4] // "16:00 AS 17:00"
+  return BUCKETS[5] // "OUTROS"
 }
 
 const detectCol = (obj: any, cands: string[]): string | null => {
@@ -286,7 +298,7 @@ export async function POST(req: NextRequest) {
 
     // Agregações
     const mat = new Map(), noMap = new Map()
-    let grand = 0, totalValue = 0, solidsNo15 = 0
+    let grand = 0, totalValue = 0, solidsNo15 = 0, totalSolids = 0
     const sellerAgg = new Map()
     const hourlyTotals = Object.fromEntries(BUCKETS.map(b => [b, 0]))
     const solidsSet = new Set(GROUPS.find(g => g.solids)?.items || [])
@@ -295,20 +307,25 @@ export async function POST(req: NextRequest) {
       const mapped = formMap[row.formaNorm] || row.formaNorm || '(SEM MAPA)'
       if (!formMap[row.formaNorm]) {
         const k = row.formaNorm || '(vazio)'
-        noMap.set(k, (noMap.get(k) || 0) + row.quantidade)
+        noMap.set(k, (noMap.get(k) || 0) + row.quantidade) // Manter a soma de quantidade para itens não mapeados
       }
       const k2 = `${mapped}|${row.bucket}`
-      mat.set(k2, (mat.get(k2) || 0) + row.quantidade)
-      hourlyTotals[row.bucket] = (hourlyTotals[row.bucket] || 0) + row.quantidade
+      mat.set(k2, (mat.get(k2) || 0) + 1) // Contar por fórmula
+      hourlyTotals[row.bucket] = (hourlyTotals[row.bucket] || 0) + 1 // Contar por fórmula
 
       const name = row.vendedor || '—'
       const prev = sellerAgg.get(name) || { qty: 0, value: 0 }
-      prev.qty += row.quantidade
+      prev.qty += 1 // Contar por fórmula
       prev.value += Number(row.valor || 0)
       sellerAgg.set(name, prev)
 
-      if (solidsSet.has(mapped) && row.bucket !== '15:00') solidsNo15 += row.quantidade
-      grand += row.quantidade
+      if (solidsSet.has(mapped)) {
+        totalSolids += 1 // Contar por fórmula
+        if (row.bucket !== '15:00') {
+          solidsNo15 += 1 // Contar por fórmula
+        }
+      }
+      grand += row.quantidade // Manter grand como a soma total de quantidades para possível uso futuro
       totalValue += Number(row.valor || 0)
     }
 
@@ -411,9 +428,9 @@ export async function POST(req: NextRequest) {
       items: merged.map((item, index) => ({ ...item, id: index })),
       tableRows: lines,
       kpis: {
-        totalQuantity: totalFormulas,
+        totalQuantity: merged.length, // Corrigido para contagem de fórmulas processadas
         totalValue,
-        solidCount: solidsNo15,
+        solidCount: totalSolids,
         topSeller,
         formulasProcessed: merged.length
       },
@@ -433,9 +450,9 @@ export async function POST(req: NextRequest) {
     console.log('📊 Dados do relatório:', {
       userId: session.user.id,
       date,
-      totalQuantity: totalFormulas,
+      totalQuantity: merged.length, // Corrigido para contagem de fórmulas processadas
       totalValue,
-      solidCount: solidsNo15,
+      solidCount: totalSolids,
       topSeller,
       mergedItemsCount: merged.length,
       totalQtySum: grand
@@ -463,9 +480,9 @@ export async function POST(req: NextRequest) {
           status: 'completed',
           diario_file_name: diarioFile.name,
           controle_file_name: controleFile.name,
-          total_quantity: totalFormulas,
+          total_quantity: merged.length, // Corrigido para contagem de fórmulas processadas
           total_value: totalValue,
-          solid_count: solidsNo15,
+          solid_count: totalSolids,
           top_seller: topSeller,
           processed_data: responseData,
           kanban_data: kanbanData,
@@ -495,9 +512,9 @@ export async function POST(req: NextRequest) {
           user_id: session.user.id,
           diario_file_name: diarioFile.name,
           controle_file_name: controleFile.name,
-          total_quantity: totalFormulas,
+          total_quantity: merged.length, // Corrigido para contagem de fórmulas processadas
           total_value: totalValue,
-          solid_count: solidsNo15,
+          solid_count: totalSolids,
           top_seller: topSeller,
           processed_data: responseData,
           kanban_data: kanbanData,
@@ -579,9 +596,9 @@ export async function POST(req: NextRequest) {
       report_date: date,
       report_id: savedReport.id,
       processed_at: new Date().toISOString(),
-      total_quantity: totalFormulas,
+      total_quantity: merged.length, // Corrigido para contagem de fórmulas processadas
       total_value: totalValue,
-      solid_count: solidsNo15,
+      solid_count: totalSolids,
       top_seller: topSeller,
       diario_file_name: diarioFile.name,
       controle_file_name: controleFile.name,

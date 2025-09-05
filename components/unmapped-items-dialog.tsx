@@ -1,5 +1,3 @@
-"use client"
-
 import React, { useState, useEffect } from "react"
 import {
   Dialog,
@@ -55,7 +53,7 @@ const PHARMACEUTICAL_CATEGORIES = [
   
   // GRUPO DERMATO A
   { value: "GEL TRANSDERMICO, GEL VAGINAL", label: "Gel Transdérmico/Vaginal", group: "DERMATO A" },
-  { value: "CREME, HYDRA FRESH, SECOND SKIN, CREME CRODA, CREME NÃO IONICO, CREME OIL FREE, CREME AREA DOS OLHOS, CREME CELULITE, LOÇÃO, LOÇÃO CREMOSA, LOÇÃO CRODA, LOÇÃO NÃO IONICA, LOÇÃO OIL FREE, POMADA", label: "Cremes e Loções", group: "DERMATO A" },
+  { value: "Creme e Loções", label: "Cremes e Loções", group: "DERMATO A" },
   { value: "BASE SERUM", label: "Base Serum", group: "DERMATO A" },
   { value: "SHOT", label: "Shot", group: "DERMATO A" },
   { value: "SOLUÇÃO, XAROPE, ESMALTE", label: "Solução/Xarope/Esmalte", group: "DERMATO A" },
@@ -429,7 +427,7 @@ export function UnmappedItemsDialog({
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="sm:justify-end gap-2">
           <Button variant="outline" onClick={onCancel}>
             Cancelar Processamento
           </Button>

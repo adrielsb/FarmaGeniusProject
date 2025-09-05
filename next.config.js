@@ -12,6 +12,9 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   images: { unoptimized: true },
+  experimental: {
+    allowedDevOrigins: [],
+  },
 };
 
 module.exports = nextConfig;
