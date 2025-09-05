@@ -29,3 +29,4 @@ This is the FarmaGenius project. The codebase is currently empty and awaiting in
 
 *Additional development-specific information will be added as the project evolves.*
 - se eu nao for claro, ou voce nao entender o que foi passado nunca altere nada, sempre pergunte antes e confirme para ter mais clareza e melhor entendimento
+- antes de modificar qualquer arquivo *SEMPRE* pergunte antes
