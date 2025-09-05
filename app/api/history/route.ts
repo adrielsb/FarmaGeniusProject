@@ -80,10 +80,13 @@ export async function GET(req: NextRequest) {
           break
       }
     } else {
-      // Filtro padrão: mês atual
-      const today = new Date()
-      const currentMonth = String(today.getMonth() + 1).padStart(2, '0')
-      query = query.like('date', `%/${currentMonth}`)
+      // Se limit=1, não aplicar filtro de mês para sempre pegar o último relatório geral
+      if (limit !== 1) {
+        // Filtro padrão: mês atual
+        const today = new Date()
+        const currentMonth = String(today.getMonth() + 1).padStart(2, '0')
+        query = query.like('date', `%/${currentMonth}`)
+      }
     }
 
     const { data: reportsData, error: reportsError } = await query
