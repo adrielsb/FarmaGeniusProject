@@ -11,7 +11,15 @@ export const maxDuration = 300 // 5 minutos para processamento de período
 // Reutilizar as constantes e funções do processo diário
 const BUCKETS = ["7:00 AS 8:00", "10:00 AS 13:00", "14:00", "15:00", "16:00 AS 17:00", "OUTROS"]
 
-const GROUPS = [
+type GroupType = {
+  title: string;
+  items: string[];
+  hourlyLabel: string;
+  extras?: string[];
+  solids?: boolean;
+}
+
+const GROUPS: GroupType[] = [
   {
     title: 'SOLIDOS',
     items: ['CAPSULAS PRONTAS', 'CAPSULAS', 'CAPSULAS GASTRO', 'SACHES', 'MATERIA PRIMA'],
